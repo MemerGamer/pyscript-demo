@@ -7,10 +7,20 @@
     <title>PyScript Demo</title>
     <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+        - matplotlib
+        - numpy
+        - math
+    </py-env>
   </head>
   <body>
-      <py-script src="/scripts/test1.py">
+      <h1>Plotting with PyScript</h1>
+      <div id="plot">
 
+      </div>
+        
+      <py-script src="/scripts/plot.py" output = "plot">  
+szabalyos(4)
       </py-script>
   </body>
 </html>
