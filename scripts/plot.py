@@ -1,9 +1,5 @@
-
-from matplotlib.patches import Polygon
-import matplotlib.pyplot as plt #fgv abrazolashoz szukseges
-import numpy as np #vektormuveletekhez szukseges csomag
+import matplotlib.pyplot as plt
 import math as m
-
 def szabalyos(n):
     radius = 0.5
     rotation=0
@@ -25,4 +21,3 @@ def szabalyos(n):
     plt.axis('equal')
     plt.plot(xs,ys)
     plt.show()
-
