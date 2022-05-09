@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     
-        <title> Volume of a Tetrahedron </title>
+    <title> Volume of a Tetrahedron </title>
+    <link rel = "icon" href = "tetrahedron.png" type = "image/x-icon">
     
     <!-- Pyscript -->
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
     <!--<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />-->
     
-    <!-- bootstrap  -->
+    <!-- Bootstrap  -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
@@ -17,45 +18,15 @@
 </head>
 
 <body>
+
+<!-- variables for python imports-->
 <py-env>
     - numpy
 </py-env>
 
-<!-- write your Python code in py-script tag -->
-<py-script>
-import math as m
-
-import numpy as np
-
-from js import document,alert
-     
-def getVect(A,B):
-    V = ()
-    for i in range(len(A)):
-        V = V + (B[i]-A[i],)
-    return V
-
-def Terfogat(A,B,C,D):
-    vAB = getVect(A,B)
-    vAC = getVect(A,C)
-    vAD = getVect(A,D)
-    
-    ABxAC = np.cross(vAB,vAC)
-    #print(ABxAC)
-    nevezo = np.dot(ABxAC,vAD)
-    V = nevezo / 6
-    return V
-    
-def convert(*ags, **kws):
-    
-    A = document.getElementById('coordinate1').value;
-    B = document.getElementById('coordinate2').value;
-    C = document.getElementById('coordinate3').value;
-    D = document.getElementById('coordinate4').value;
-    
-    result=Terfogat(eval(A),eval(B),eval(C),eval(D))
-    result = abs(result)
-    pyscript.write("result",result)    
+<!-- importing the corresponding python project -->
+<py-script src="./scripts/volume.py">
+   
 </py-script>    
 
     <div class="container">
