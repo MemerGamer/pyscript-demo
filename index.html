@@ -6,18 +6,38 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>PyScript - Polygon Plotting Demo</title>
     <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+    <link rel="stylesheet" href="style.css">
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
 
     <py-env>
-        - matplotlib
-        - math
+        - js
     </py-env>
 </head>
 <body>
-    <py-script> print("Polynom")</py-script>
-    <div id="lineplot"></div>
-    <py-script src ="/scripts/plot.py" t="lineplot">
-szabalyos(4)
+    <h1>PyScript - Polygon Plotting Demo</h1>
+    <div>Type an sample input here</div>
+    <input type="text" id="test-input">
+    <button id="submit-button" type="submit" pys-onClick="my_function">OK</button>
+    <div id="test-output"></div>
+
+
+    <py-script output="test-output">
+from js import console
+
+def my_function(*args, **kwargs):
+        
+#print('args:', args)
+#print('kwargs:', kwargs)
+        
+console.log(f'args: {args}')
+console.log(f'kwargs: {kwargs}')
+            
+text = Element('test-input').element.value
+        
+#print('text:', text)
+console.log(f'text: {text}')
+        
+Element('test-output').element.innerText = text
     </py-script>
 </body>
 </html>
