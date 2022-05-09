@@ -1,7 +1,13 @@
-body{
+body {
+    background-color: #fcfcfc;
+    padding-top: 55px;
+    min-height: 100vh;
+    margin:0;
+    display:flex;
+    flex-direction:column;
     text-align: center;
-}
+  }
 
-#submit-button{
-    border: 1em;
+#result{
+  resize: none;
 }

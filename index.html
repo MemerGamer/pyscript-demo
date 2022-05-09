@@ -1,43 +1,91 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>PyScript - Polygon Plotting Demo</title>
-    <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
-    <link rel="stylesheet" href="style.css">
+    
+        <title> Volume of a Tetrahedron </title>
+    
+    <!-- Pyscript -->
     <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
-
-    <py-env>
-        - js
-    </py-env>
+    <!--<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />-->
+    
+    <!-- bootstrap  -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./style.css">
+    
 </head>
+
 <body>
-    <h1>PyScript - Polygon Plotting Demo</h1>
-    <div>Type an sample input here</div>
-    <input type="text" id="test-input">
-    <button id="submit-button" type="submit" pys-onClick="my_function">OK</button>
-    <div id="test-output"></div>
+<py-env>
+    - numpy
+</py-env>
 
+<!-- write your Python code in py-script tag -->
+<py-script>
+import math as m
 
-    <py-script output="test-output">
-from js import console
+import numpy as np
 
-def my_function(*args, **kwargs):
+from js import document,alert
+     
+def getVect(A,B):
+    V = ()
+    for i in range(len(A)):
+        V = V + (B[i]-A[i],)
+    return V
+
+def Terfogat(A,B,C,D):
+    vAB = getVect(A,B)
+    vAC = getVect(A,C)
+    vAD = getVect(A,D)
+    
+    ABxAC = np.cross(vAB,vAC)
+    #print(ABxAC)
+    nevezo = np.dot(ABxAC,vAD)
+    V = nevezo / 6
+    return V
+    
+def convert(*ags, **kws):
+    
+    A = document.getElementById('coordinate1').value;
+    B = document.getElementById('coordinate2').value;
+    C = document.getElementById('coordinate3').value;
+    D = document.getElementById('coordinate4').value;
+    
+    result=Terfogat(eval(A),eval(B),eval(C),eval(D))
+    result = abs(result)
+    pyscript.write("result",result)    
+</py-script>    
+
+    <div class="container">
         
-#print('args:', args)
-#print('kwargs:', kwargs)
+        <h1 class="text-center">
+            Volume of a Tetrahedron
+        </h1>
+        <br />
+        <p><h3>Enter 4 Coordinates (Vertices of The Tetrahedron):</h3>
+        <h4>Coordinate Example: (1,2,3) </h4>
+
+        <br>
+
+        <input id="coordinate1" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter Coordinate" /></p>
+        <input id="coordinate2" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter Coordinate" /></p>
+        <input id="coordinate3" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter Coordinate" /></p>
+        <input id="coordinate4" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter Coordinate" /></p>
         
-console.log(f'args: {args}')
-console.log(f'kwargs: {kwargs}')
-            
-text = Element('test-input').element.value
+        <center>
+            <button id="convert" type="submit"  class="btn btn-info" pys-onClick="convert">Convert</button>
+
+        </center>
         
-#print('text:', text)
-console.log(f'text: {text}')
+        <p>
+        <h4>Results:</h4>
+        <h4>Volume of the Given Tetrahedron:</h4>
+        <textarea id="result" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Result"></textarea></p>
+    
         
-Element('test-output').element.innerText = text
-    </py-script>
-</body>
-</html>
+    </div>    
+    
+    </body>
+    </html>    
