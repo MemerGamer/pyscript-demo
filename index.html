@@ -1,64 +1,539 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    
-    <title> Volume of a Tetrahedron </title>
-    <link rel = "icon" href = "tetrahedron.png" type = "image/x-icon">
-    
-    <!-- Pyscript -->
-    <!-- Recommended meta tags -->
-    <!-- PyScript CSS -->
-    <link rel="stylesheet" href="https://pyscript.net/releases/2025.8.1/core.css">
-    <!-- This script tag bootstraps PyScript -->
-    <script type="module" src="https://pyscript.net/releases/2025.8.1/core.js"></script>
-    
-    <!-- Bootstrap  -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="./style.css">
-    
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volume of a Tetrahedron</title>
+    <link rel="icon" href="tetrahedron.png" type="image/x-icon" />
 
-<body>
+    <!-- PyScript -->
+    <link
+      rel="stylesheet"
+      href="https://pyscript.net/releases/2025.8.1/core.css"
+    />
+    <script
+      type="module"
+      src="https://pyscript.net/releases/2025.8.1/core.js"
+    ></script>
 
-<!-- variables for python imports-->
-<py-env>
-    - numpy
-</py-env>
-   
-</py-script>    
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            animation: {
+              "fade-in": "fadeIn 0.5s ease-in-out",
+              "slide-up": "slideUp 0.3s ease-out",
+              "spin-slow": "spin 3s linear infinite",
+              "pulse-slow": "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              "bounce-slow": "bounce 2s infinite",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      @keyframes floatUp {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+      @keyframes dots {
+        0%,
+        20% {
+          color: rgba(0, 0, 0, 0);
+          text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+        }
+        40% {
+          color: currentColor;
+          text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+        }
+        60% {
+          text-shadow: 0.25em 0 0 currentColor, 0.5em 0 0 rgba(0, 0, 0, 0);
+        }
+        80%,
+        100% {
+          text-shadow: 0.25em 0 0 currentColor, 0.5em 0 0 currentColor;
+        }
+      }
+      .glass {
+        backdrop-filter: blur(16px) saturate(180%);
+        background-color: rgba(255, 255, 255, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.125);
+      }
+      .dark .glass {
+        background-color: rgba(17, 25, 40, 0.75);
+        border: 1px solid rgba(255, 255, 255, 0.125);
+      }
+      .animate-float {
+        animation: floatUp 3s ease-in-out infinite;
+      }
+      .animate-dots::after {
+        content: "...";
+        animation: dots 1.5s steps(5, end) infinite;
+      }
 
-    <div class="container">
-        
-        <h1 class="text-center">
-            Volume of a Tetrahedron
+      /* Loader specific styles */
+      .loader-ring {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+      }
+      .loader-ring div {
+        box-sizing: border-box;
+        display: block;
+        position: absolute;
+        width: 64px;
+        height: 64px;
+        margin: 8px;
+        border: 8px solid currentColor;
+        border-radius: 50%;
+        animation: loader-ring-spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        border-color: currentColor transparent transparent transparent;
+      }
+      .loader-ring div:nth-child(1) {
+        animation-delay: -0.45s;
+      }
+      .loader-ring div:nth-child(2) {
+        animation-delay: -0.3s;
+      }
+      .loader-ring div:nth-child(3) {
+        animation-delay: -0.15s;
+      }
+
+      @keyframes loader-ring-spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body
+    class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 transition-all duration-500"
+  >
+    <!-- Loading Screen -->
+    <div
+      id="loading-screen"
+      class="fixed inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 flex items-center justify-center z-50 transition-all duration-1000"
+    >
+      <div class="text-center">
+        <div
+          class="glass rounded-3xl p-12 shadow-2xl max-w-md mx-auto animate-float"
+        >
+          <!-- Logo/Icon -->
+          <div class="mb-8">
+            <div
+              class="w-24 h-24 mx-auto bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg"
+            >
+              <svg
+                class="w-12 h-12 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19.428 15.428l-7.071 7.071L5.286 15.428a2.025 2.025 0 010-2.864L12.357 5.493a2.025 2.025 0 012.864 0l7.071 7.071a2.025 2.025 0 010 2.864z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Spinner -->
+          <div class="mb-6">
+            <div class="loader-ring text-blue-500 dark:text-blue-400 mx-auto">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </div>
+
+          <!-- Loading Text -->
+          <div class="space-y-2">
+            <h2
+              class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
+            >
+              Loading PyScript
+            </h2>
+            <p
+              class="text-gray-600 dark:text-gray-300 animate-dots"
+              id="loading-text"
+            >
+              Initializing Python environment
+            </p>
+          </div>
+
+          <!-- Progress Steps -->
+          <div class="mt-8 space-y-3">
+            <div class="flex items-center text-sm">
+              <div
+                class="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"
+              ></div>
+              <span class="text-gray-600 dark:text-gray-300"
+                >Loading PyScript runtime</span
+              >
+            </div>
+            <div
+              class="flex items-center text-sm"
+              id="step-packages"
+              style="opacity: 0.5"
+            >
+              <div class="w-2 h-2 bg-gray-400 rounded-full mr-3"></div>
+              <span class="text-gray-600 dark:text-gray-300"
+                >Installing packages (numpy)</span
+              >
+            </div>
+            <div
+              class="flex items-center text-sm"
+              id="step-ready"
+              style="opacity: 0.5"
+            >
+              <div class="w-2 h-2 bg-gray-400 rounded-full mr-3"></div>
+              <span class="text-gray-600 dark:text-gray-300"
+                >Ready to calculate!</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PyScript configuration -->
+    <py-config> packages = ["numpy"] </py-config>
+
+    <!-- Theme Toggle Button -->
+    <div class="fixed top-4 right-4 z-40">
+      <button
+        id="theme-toggle"
+        class="p-3 rounded-full glass hover:scale-110 transform transition-all duration-200 shadow-lg hover:shadow-xl"
+        onclick="toggleTheme()"
+      >
+        <svg
+          id="sun-icon"
+          class="w-6 h-6 text-yellow-500 hidden dark:block"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+          ></path>
+        </svg>
+        <svg
+          id="moon-icon"
+          class="w-6 h-6 text-blue-600 block dark:hidden"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          ></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Main Content (initially hidden) -->
+    <div
+      id="main-content"
+      class="container mx-auto px-4 py-8 max-w-4xl animate-fade-in"
+      style="opacity: 0"
+    >
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1
+          class="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-4"
+        >
+          Volume of a Tetrahedron
         </h1>
-        <br />
-        <p><h3>Enter 4 Coordinates (Vertices of The Tetrahedron):</h3>
-        <h4>Coordinate Example: (1,2,3) </h4>
+        <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          Calculate the volume of a tetrahedron by entering the coordinates of
+          its four vertices
+        </p>
+      </div>
 
-        <br>
+      <!-- Main Content -->
+      <div class="glass rounded-3xl p-8 shadow-2xl animate-slide-up">
+        <!-- Instructions -->
+        <div class="mb-8">
+          <h3
+            class="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-2"
+          >
+            Enter 4 Coordinates (Vertices of The Tetrahedron)
+          </h3>
+          <div
+            class="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 border border-blue-200 dark:border-blue-700"
+          >
+            <p class="text-blue-700 dark:text-blue-300 font-medium">
+              💡 Coordinate Example:
+              <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded"
+                >(1,2,3)</code
+              >
+            </p>
+          </div>
+        </div>
 
-        <input id="coordinate1" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter Coordinate" /></p>
-        <input id="coordinate2" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter Coordinate" /></p>
-        <input id="coordinate3" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter Coordinate" /></p>
-        <input id="coordinate4" type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Enter Coordinate" /></p>
-        
-        <center>
-            <button id="convert" type="submit"  class="btn btn-info" pys-onClick="convert">Convert</button>
+        <!-- Input Fields -->
+        <div class="grid gap-4 mb-8">
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="coordinate1"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Vertex A
+              </label>
+              <input
+                id="coordinate1"
+                type="text"
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200"
+                placeholder="Enter first coordinate"
+              />
+            </div>
+            <div>
+              <label
+                for="coordinate2"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Vertex B
+              </label>
+              <input
+                id="coordinate2"
+                type="text"
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200"
+                placeholder="Enter second coordinate"
+              />
+            </div>
+            <div>
+              <label
+                for="coordinate3"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Vertex C
+              </label>
+              <input
+                id="coordinate3"
+                type="text"
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200"
+                placeholder="Enter third coordinate"
+              />
+            </div>
+            <div>
+              <label
+                for="coordinate4"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Vertex D
+              </label>
+              <input
+                id="coordinate4"
+                type="text"
+                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 transition-all duration-200"
+                placeholder="Enter fourth coordinate"
+              />
+            </div>
+          </div>
+        </div>
 
-        </center>
-        
-        <p>
-        <h4>Results:</h4>
-        <h4>Volume of the Given Tetrahedron:</h4>
-        <textarea id="result" class="form-control" rows="2" aria-label="Large" aria-describedby="inputGroup-sizing-sm" placeholder="Result"></textarea></p>
-    
-        
-    </div>    
-    
-    <!-- importing the corresponding python project -->
-    <py-script src="./scripts/volume.py">
-    </body>
-    </html>    
+        <!-- Calculate Button -->
+        <div class="text-center mb-8">
+          <button
+            id="convert"
+            type="button"
+            class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-12 py-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+            py-click="convert"
+          >
+            <span class="flex items-center justify-center gap-2">
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                ></path>
+              </svg>
+              Calculate Volume
+            </span>
+          </button>
+        </div>
+
+        <!-- Results -->
+        <div
+          class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+        >
+          <h4
+            class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2"
+          >
+            <svg
+              class="w-6 h-6 text-green-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            Results
+          </h4>
+          <label
+            for="result"
+            class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          >
+            Volume of the Given Tetrahedron:
+          </label>
+          <textarea
+            id="result"
+            rows="3"
+            readonly
+            class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 resize-none font-mono text-lg focus:border-green-500 dark:focus:border-green-400 focus:ring-2 focus:ring-green-200 dark:focus:ring-green-800 transition-all duration-200"
+            placeholder="Result will appear here..."
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="text-center mt-8">
+        <p class="text-gray-500 dark:text-gray-400">
+          Built with ❤️ using PyScript and Tailwind CSS
+        </p>
+      </div>
+    </div>
+
+    <!-- Theme Toggle Script -->
+    <script>
+      // Check for saved theme preference or default to 'light' mode
+      const theme = localStorage.getItem("theme") || "light";
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+      }
+
+      function toggleTheme() {
+        const isDark = document.documentElement.classList.contains("dark");
+
+        if (isDark) {
+          document.documentElement.classList.remove("dark");
+          localStorage.setItem("theme", "light");
+        } else {
+          document.documentElement.classList.add("dark");
+          localStorage.setItem("theme", "dark");
+        }
+      }
+
+      // PyScript Loading Management
+      let loadingSteps = 0;
+      const totalSteps = 3;
+
+      function updateLoadingProgress() {
+        const steps = [
+          { id: "step-packages", text: "Installing packages (numpy)" },
+          { id: "step-ready", text: "Ready to calculate!" },
+        ];
+
+        if (loadingSteps < steps.length) {
+          const step = document.getElementById(steps[loadingSteps].id);
+          const dot = step.querySelector("div");
+          step.style.opacity = "1";
+          dot.classList.remove("bg-gray-400");
+          dot.classList.add("bg-green-500", "animate-pulse");
+        }
+        loadingSteps++;
+      }
+
+      function hideLoadingScreen() {
+        const loadingScreen = document.getElementById("loading-screen");
+        const mainContent = document.getElementById("main-content");
+
+        // Final step
+        updateLoadingProgress();
+
+        setTimeout(() => {
+          loadingScreen.style.opacity = "0";
+          loadingScreen.style.transform = "scale(0.95)";
+
+          setTimeout(() => {
+            loadingScreen.style.display = "none";
+            mainContent.style.opacity = "1";
+          }, 500);
+        }, 800);
+      }
+
+      // Listen for PyScript events
+      document.addEventListener("py-ready", function () {
+        console.log("PyScript is ready!");
+        hideLoadingScreen();
+      });
+
+      document.addEventListener("py-error", function (event) {
+        console.error("PyScript error:", event.detail);
+        const loadingText = document.getElementById("loading-text");
+        loadingText.textContent = "Error loading PyScript";
+        loadingText.classList.remove("animate-dots");
+        loadingText.classList.add("text-red-500");
+      });
+
+      // Simulate loading progress for packages
+      setTimeout(() => updateLoadingProgress(), 1500);
+      setTimeout(() => updateLoadingProgress(), 3000);
+
+      // Fallback: Hide loading screen after 10 seconds if PyScript doesn't fire events
+      setTimeout(() => {
+        if (
+          document.getElementById("loading-screen").style.display !== "none"
+        ) {
+          console.log("Fallback: hiding loading screen");
+          hideLoadingScreen();
+        }
+      }, 10000);
+    </script>
+
+    <!-- Python script -->
+    <py-script src="./scripts/volume.py"></py-script>
+  </body>
+</html>
